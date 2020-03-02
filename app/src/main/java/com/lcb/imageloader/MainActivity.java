@@ -1,93 +1,90 @@
 package com.lcb.imageloader;
 
-import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
 import android.util.Log;
-import android.view.MotionEvent;
 import android.view.View;
+import android.widget.TextView;
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener, View.OnTouchListener {
+import androidx.recyclerview.widget.ItemTouchHelper;
+
+import com.lcb.imageloader.bean.UserInfo;
+import com.lcb.imageloader.db.BaseDao;
+import com.lcb.imageloader.db.BaseDaoFactory;
+
+import java.util.List;
+import java.util.Random;
+
+import okhttp3.OkHttpClient;
+
+
+@ContentView(R.layout.activity_main)
+public class MainActivity extends BaseActivity {
 
     public static final String TAG = "MainActivity";
+
+
+    ItemTouchHelper itemTouchHelper;
+
+    @InjectView(R.id.tv)
+    TextView tv;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        System.out.println(tv.getId());
 
-        findViewById(R.id.tv).setOnClickListener(this);
+        tv.setText("1324");
+        tv.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                click();
+            }
+        });
     }
 
-    @Override
-    public boolean dispatchTouchEvent(MotionEvent ev) {
-        switch (ev.getAction()) {
-            case MotionEvent.ACTION_DOWN:
-                Log.d(TAG, "dispatchTouchEvent ----------- MotionEvent.ACTION_DOWN  ------------");
-                break;
-            case MotionEvent.ACTION_MOVE:
-                Log.d(TAG, "dispatchTouchEvent ----------- MotionEvent.ACTION_MOVE  ------------");
-                break;
-            case MotionEvent.ACTION_UP:
-                Log.d(TAG, "dispatchTouchEvent ----------- MotionEvent.ACTION_UP  ------------");
-                break;
-            case MotionEvent.ACTION_CANCEL:
-                Log.d(TAG, "dispatchTouchEvent ----------- MotionEvent.ACTION_CANCEL  ------------");
-                break;
-            default:
-                break;
+
+    private void testRxJava2() {
+
+    }
+
+    private void okHttpInit() {
+        OkHttpClient okHttpClient = new OkHttpClient.Builder()
+                .build();
+
+    }
+
+
+    public void click() {
+        BaseDao<UserInfo> baseDao = BaseDaoFactory.getInstance().getBaseDao(UserInfo.class);
+        baseDao.insert(new UserInfo("1", "LiSi"));
+        baseDao.insert(new UserInfo("2", "LiSi"));
+        long result = baseDao.insert(new UserInfo(3 + "" + new Random().nextInt(50), "LiSi"));
+
+        System.out.println("------insert----- " + result);
+
+        UserInfo userInfo = new UserInfo();
+        userInfo.setId("1");
+        userInfo.setName("LiSi");
+        List<UserInfo> resultList = baseDao.query(userInfo);
+        if (resultList != null) {
+            for (UserInfo info : resultList) {
+                System.out.println("---query--- " + info.toString());
+            }
         }
-        return super.dispatchTouchEvent(ev);
-    }
+        System.out.println("------query---end-- ");
 
 
-    @Override
-    public boolean onTouchEvent(MotionEvent event) {
-        switch (event.getAction()) {
-            case MotionEvent.ACTION_DOWN:
-                Log.d(TAG, "onTouchEvent ----------- MotionEvent.ACTION_DOWN  ------------");
-                break;
-            case MotionEvent.ACTION_MOVE:
-                Log.d(TAG, "onTouchEvent ----------- MotionEvent.ACTION_MOVE  ------------");
-                break;
-            case MotionEvent.ACTION_UP:
-                Log.d(TAG, "onTouchEvent ----------- MotionEvent.ACTION_UP  ------------");
-                break;
-            case MotionEvent.ACTION_CANCEL:
-                Log.d(TAG, "onTouchEvent ----------- MotionEvent.ACTION_CANCEL  ------------");
-                break;
-            default:
-                break;
+        long update = baseDao.update(new UserInfo("332","王五"), userInfo);
+        userInfo.setName(null);
+        resultList = baseDao.query(userInfo);
+        if (resultList != null) {
+            for (UserInfo info : resultList) {
+                System.out.println(update + "---update--- " + info.toString());
+            }
         }
-        return super.onTouchEvent(event);
-    }
+        System.out.println("------update---end-- ");
 
-
-    @Override
-    public void onClick(View v) {
-        Log.d(TAG, "----------- onClick  ------------");
-
-    }
-
-    @Override
-    public boolean onTouch(View v, MotionEvent event) {
-        switch (event.getAction()) {
-            case MotionEvent.ACTION_DOWN:
-                Log.d(TAG, "onTouch ----------- MotionEvent.ACTION_DOWN  ------------");
-                break;
-            case MotionEvent.ACTION_MOVE:
-                Log.d(TAG, "onTouch ----------- MotionEvent.ACTION_MOVE  ------------");
-                break;
-            case MotionEvent.ACTION_UP:
-                Log.d(TAG, "onTouch ----------- MotionEvent.ACTION_UP  ------------");
-                break;
-            case MotionEvent.ACTION_CANCEL:
-                Log.d(TAG, "onTouch ----------- MotionEvent.ACTION_CANCEL  ------------");
-                break;
-            default:
-                break;
-        }
-        return false;
     }
 
 
